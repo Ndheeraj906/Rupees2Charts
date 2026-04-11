@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruppes2Bar</title>
+  <!-- Google Fonts: Poppins (headings) + Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────────── */
+    :root {
+      --navy:       #0A2540;
+      --navy-mid:   #0d1f45;
+      --lb:         #635BFF;
+      --lb-dark:    #4f47e3;
+      --charcoal:   #1e2640;
+      --bg:         #0A2540;
+      --border:     rgba(255,255,255,0.1);
+      --mint:       #00D4A6;
+      --olive:      #708238;
+      --cream:      #FAF3E0;
+      --coral:      #F472B6;
+      --coral-dark: #d960a3;
+      --indigo:     #635BFF;
+      --purple:     #8b5cf6;
+      --sidebar-w:  240px;
+      --glass-bg:   rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.12);
+    }
+
+    /* ── Bootstrap semantic color overrides ─────────────────────── */
+    .text-success { color: var(--mint)  !important; }
+    .text-danger  { color: var(--coral) !important; }
+    .text-primary { color: var(--lb)    !important; }
+
+    /* ── Base ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--charcoal);
+      margin: 0; min-height: 100vh;
+      background: linear-gradient(-45deg, #0A2540, #0d1b4a, #1a0840, #0f0a2e);
+      background-size: 400% 400%;
+      animation: meshBg 22s ease infinite;
+      background-attachment: fixed;
+    }
+    @keyframes meshBg {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; }
+
+    /* ── Global background glow layers ─────────────────────────── */
+    .bg-glow {
+      position: fixed; border-radius: 50%;
+      filter: blur(110px); pointer-events: none; z-index: 0;
+    }
+    .bg-glow-1 {
+      width: 640px; height: 640px;
+      background: radial-gradient(circle, rgba(99,91,255,0.22) 0%, transparent 70%);
+      top: -12%; left: -8%;
+      animation: glowDrift1 16s ease-in-out infinite;
+    }
+    .bg-glow-2 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(244,114,182,0.2) 0%, transparent 70%);
+      bottom: -12%; right: -8%;
+      animation: glowDrift2 20s ease-in-out infinite;
+    }
+    .bg-glow-3 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(0,212,166,0.13) 0%, transparent 70%);
+      top: 38%; left: 38%;
+      animation: glowDrift3 13s ease-in-out infinite;
+    }
+    @keyframes glowDrift1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(60px,40px);} }
+    @keyframes glowDrift2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-50px,-32px);} }
+    @keyframes glowDrift3 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(32px,-22px) scale(1.18);} }
+
+    /* ── Reusable buttons ───────────────────────────────────────── */
+    .btn-lb {
+      background: linear-gradient(135deg, #635BFF 0%, #4f47e3 100%);
+      border: none; color: #fff;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      border-radius: 12px; letter-spacing: 0.02em;
+      transition: all 0.28s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden;
+    }
+    .btn-lb::after {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+      transition: left 0.5s ease; border-radius: 12px;
+    }
+    .btn-lb:hover, .btn-lb:focus {
+      color: #fff; transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(99,91,255,0.55);
+    }
+    .btn-lb:hover::after { left: 100%; }
+    .btn-lb:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(99,91,255,0.4); }
+
+    .btn-coral {
+      background: linear-gradient(135deg, #F472B6 0%, #d960a3 100%);
+      border: none; color: #fff;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      border-radius: 12px; letter-spacing: 0.02em;
+      transition: all 0.28s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden;
+    }
+    .btn-coral::after {
+      content: ''; position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+      transition: left 0.5s ease;
+    }
+    .btn-coral:hover, .btn-coral:focus {
+      color: #fff; transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(244,114,182,0.55);
+    }
+    .btn-coral:hover::after { left: 100%; }
+    .btn-coral:active { transform: translateY(0); }
+
+    /* ── Logo bubble ────────────────────────────────────────────── */
+    .r2b-logo {
+      background: linear-gradient(135deg, #635BFF 0%, #F472B6 100%);
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+    }
+    .r2b-logo-lg { width: 72px; height: 72px; font-size: 1.6rem;
+      box-shadow: 0 0 0 4px rgba(99,91,255,0.28), 0 0 0 8px rgba(99,91,255,0.1), 0 14px 42px rgba(99,91,255,0.6);
+      animation: logoSpin 0.65s cubic-bezier(0.34,1.56,0.64,1) 0.15s both, logoPulse 3.5s ease-in-out 1s infinite; }
+    .r2b-logo-sm { width: 36px; height: 36px; font-size: 0.78rem; box-shadow: 0 0 0 2px rgba(99,91,255,0.25), 0 4px 16px rgba(99,91,255,0.4); }
+    @keyframes logoSpin {
+      from { transform: scale(0) rotate(-180deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);    opacity: 1; }
+    }
+    @keyframes logoPulse {
+      0%,100% { box-shadow: 0 0 0 4px rgba(99,91,255,0.28), 0 0 0 8px rgba(99,91,255,0.1), 0 14px 42px rgba(99,91,255,0.55); }
+      50%     { box-shadow: 0 0 0 6px rgba(244,114,182,0.35), 0 0 0 12px rgba(244,114,182,0.12), 0 18px 50px rgba(244,114,182,0.5); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LOGIN SCREEN
+    ═══════════════════════════════════════════════════════════════ */
+    #loginScreen {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 28% 22%, rgba(99,91,255,0.42) 0%, transparent 52%),
+        radial-gradient(ellipse at 72% 80%, rgba(244,114,182,0.36) 0%, transparent 52%),
+        radial-gradient(ellipse at 50% 50%, rgba(0,212,166,0.1) 0%, transparent 55%),
+        linear-gradient(135deg, #060d1f 0%, #0d1040 35%, #1a0840 65%, #060a2e 100%);
+      background-size: auto;
+      animation: loginGrad 14s ease infinite;
+    }
+    @keyframes loginGrad {
+      0%,100% { filter: brightness(1); }
+      50%     { filter: brightness(1.06); }
+    }
+    /* Floating background orbs */
+    .login-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(72px); pointer-events: none;
+    }
+    .login-orb-1 { width:400px; height:400px; background:rgba(99,91,255,0.28);  top:-100px; left:-120px; animation:orb1 9s  ease-in-out infinite; }
+    .login-orb-2 { width:320px; height:320px; background:rgba(244,114,182,0.26); bottom:-90px; right:-70px; animation:orb2 11s ease-in-out infinite; }
+    .login-orb-3 { width:240px; height:240px; background:rgba(0,212,166,0.18); top:42%; right:14%; animation:orb3 13s ease-in-out infinite; }
+    .login-orb-4 { width:180px; height:180px; background:rgba(99,91,255,0.15); bottom:18%; left:9%; animation:orb4 7s  ease-in-out infinite; }
+    @keyframes orb1 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(42px,-32px) scale(1.1);} }
+    @keyframes orb2 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(-32px,42px) scale(0.88);} }
+    @keyframes orb3 { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(26px,-24px) scale(1.12);} 66%{transform:translate(-16px,26px) scale(0.9);} }
+    @keyframes orb4 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(-24px,-30px) scale(1.08);} }
+
+    .login-card {
+      width: 100%; max-width: 440px; position: relative; z-index: 1;
+      background: rgba(10, 26, 52, 0.72);
+      backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+      border: 1px solid rgba(99,91,255,0.28);
+      border-radius: 24px; padding: 2.5rem 2.25rem;
+      box-shadow:
+        0 40px 90px rgba(0,0,0,0.65),
+        0 0 0 1px rgba(244,114,182,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 0 40px rgba(99,91,255,0.04);
+      animation: cardDrop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both,
+                 cardFloat 7s ease-in-out 0.8s infinite;
+    }
+    /* Glass reflection overlay */
+    .login-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 42%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 100%);
+      border-radius: 23px 23px 0 0; pointer-events: none; z-index: 0;
+    }
+    .login-card > * { position: relative; z-index: 1; }
+    @keyframes cardDrop {
+      from { opacity: 0; transform: translateY(48px) scale(0.94); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    @keyframes cardFloat {
+      0%,100% { transform: translateY(0px); }
+      50%     { transform: translateY(-14px); }
+    }
+
+    /* Auth pill nav */
+    .auth-pill-nav {
+      background: rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 4px; border: none;
+    }
+    .auth-pill-nav .nav-link {
+      border-radius: 9px; color: rgba(255,255,255,0.45);
+      font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.85rem;
+      padding: 0.5rem 1rem; transition: all 0.22s; border: none;
+    }
+    .auth-pill-nav .nav-link.active {
+      background: linear-gradient(135deg, #635BFF, #4f47e3);
+      color: #fff; box-shadow: 0 4px 20px rgba(99,91,255,0.5);
+    }
+    .auth-pill-nav .nav-link:hover:not(.active) { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); }
+
+    /* Auth form inputs */
+    .login-card .input-group .input-group-text {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.5);
+      transition: border-color 0.2s;
+    }
+    .login-card .input-group .form-control {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .login-card .input-group .form-control::placeholder { color: rgba(255,255,255,0.32); }
+    .login-card .input-group .form-control:focus {
+      background: rgba(255,255,255,0.1);
+      border-color: #635BFF;
+      box-shadow: 0 0 0 3px rgba(99,91,255,0.25);
+      color: #fff;
+    }
+    .login-card .input-group .form-control.is-invalid { border-color: var(--coral) !important; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN APP — SIDEBAR + MAIN LAYOUT
+    ═══════════════════════════════════════════════════════════════ */
+    #mainApp { display: none; min-height: 100vh; position: relative; z-index: 1; }
+
+    /* ── Sidebar ────────────────────────────────────────────────── */
+    .r2b-sidebar {
+      width: var(--sidebar-w); min-height: 100vh;
+      background: linear-gradient(180deg, rgba(10,37,64,0.98) 0%, rgba(18,14,68,0.98) 50%, rgba(20,8,52,0.98) 100%);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 200;
+      border-right: 1px solid rgba(99,91,255,0.2);
+      box-shadow: 4px 0 40px rgba(0,0,0,0.4);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    /* Animated shimmer accent line */
+    .r2b-sidebar::after {
+      content: ''; position: absolute; top: 0; right: 0; width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(99,91,255,0.6) 30%, rgba(244,114,182,0.45) 70%, transparent 100%);
+      animation: sidebarShimmer 4s ease-in-out infinite;
+    }
+    @keyframes sidebarShimmer {
+      0%,100% { opacity: 0.35; } 50% { opacity: 1; }
+    }
+    .sidebar-brand {
+      padding: 1.4rem 1.25rem 1.1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; gap: 0.65rem;
+    }
+    .sidebar-brand .brand-name {
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      font-size: 1.1rem; color: #fff; line-height: 1.2; margin: 0;
+    }
+    .sidebar-brand .brand-sub {
+      font-size: 0.7rem; color: rgba(255,255,255,0.35);
+      text-transform: uppercase; letter-spacing: 0.07em;
+    }
+
+    .sidebar-nav { padding: 1rem 0.75rem; flex: 1; }
+    .sidebar-section-label {
+      font-size: 0.67rem; font-weight: 600; color: rgba(255,255,255,0.28);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.5rem 0.5rem 0.3rem; margin-top: 0.25rem;
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.625rem 0.875rem; border-radius: 10px; width: 100%;
+      color: rgba(255,255,255,0.55); font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; border: none; background: none; cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.18s;
+      font-family: 'Inter', sans-serif;
+      text-align: left;
+    }
+    .sidebar-link i { font-size: 1rem; flex-shrink: 0; }
+    .sidebar-link:hover { background: rgba(99,91,255,0.18); color: #fff; transform: translateX(3px); }
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(99,91,255,0.28), rgba(244,114,182,0.08));
+      color: #fff;
+      box-shadow: inset 3px 0 0 #635BFF;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 0.875rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar-user {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0.25rem; margin-bottom: 0.6rem;
+    }
+    .sidebar-username {
+      font-size: 0.82rem; color: rgba(255,255,255,0.7);
+      font-weight: 500; font-family: 'Inter', sans-serif;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .btn-sidebar-logout {
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      width: 100%; padding: 0.5rem 1rem; border-radius: 9px;
+      background: rgba(244,114,182,0.08); border: 1px solid rgba(244,114,182,0.2);
+      color: rgba(244,114,182,0.8); font-size: 0.82rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.22s;
+    }
+    .btn-sidebar-logout:hover {
+      background: rgba(244,114,182,0.2); border-color: #F472B6; color: #F472B6;
+      transform: translateY(-1px); box-shadow: 0 4px 16px rgba(244,114,182,0.25);
+    }
+
+    /* ── User avatar (shared) ───────────────────────────────────── */
+    .user-avatar {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: linear-gradient(135deg, #635BFF 0%, #F472B6 100%);
+      border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: #fff;
+      font-family: 'Poppins', sans-serif;
+      box-shadow: 0 3px 12px rgba(99,91,255,0.5), 0 0 0 2px rgba(99,91,255,0.2);
+    }
+
+    /* ── Mobile overlay ─────────────────────────────────────────── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      z-index: 199; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+    }
+    .sidebar-overlay.show { display: block; }
+
+    /* ── Main content wrapper ───────────────────────────────────── */
+    .r2b-main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh; background: transparent;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── Top bar ────────────────────────────────────────────────── */
+    .r2b-topbar {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(99,91,255,0.12);
+      padding: 0.875rem 1.75rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 4px 24px rgba(10,37,64,0.15);
+    }
+    .topbar-title {
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      font-size: 1.05rem; color: var(--navy); margin: 0 0 0.1rem;
+    }
+    .topbar-sub { font-size: 0.76rem; color: #6b7280; }
+    .topbar-badge {
+      display: inline-flex; align-items: center; gap: 0.38rem;
+      background: linear-gradient(135deg, rgba(0,212,166,0.12), rgba(99,91,255,0.08));
+      color: var(--mint); border: 1px solid rgba(0,212,166,0.32);
+      font-size: 0.72rem; font-weight: 600; border-radius: 20px;
+      padding: 0.28rem 0.72rem; font-family: 'Inter', sans-serif;
+    }
+    .live-dot {
+      width: 7px; height: 7px; background: var(--mint); border-radius: 50%;
+      flex-shrink: 0; animation: livePulse 1.8s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.65); }
+    }
+    .topbar-hamburger {
+      display: none; background: none; border: none; padding: 0.3rem;
+      color: var(--navy); cursor: pointer; line-height: 1;
+    }
+
+    /* ── Content area ───────────────────────────────────────────── */
+    .r2b-content { padding: 1.75rem; flex: 1; }
+
+    /* ── KPI Cards ──────────────────────────────────────────────── */
+    .kpi-card {
+      border: none; border-radius: 20px; overflow: hidden;
+      position: relative; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s;
+    }
+    .kpi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      border-radius: 20px 20px 0 0;
+    }
+    .kpi-card:hover { transform: translateY(-8px); }
+    .kpi-card:hover .kpi-icon { transform: scale(1.12) rotate(-6deg); }
+    /* Income */
+    .kpi-card-income {
+      background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(225,255,247,0.97) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0,212,166,0.2);
+      box-shadow: 0 8px 32px rgba(0,212,166,0.2), 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .kpi-card-income::before  { background: linear-gradient(90deg, #00D4A6, #00b89c); }
+    .kpi-card-income:hover    { box-shadow: 0 22px 52px rgba(0,212,166,0.32), 0 4px 12px rgba(0,0,0,0.12); }
+    /* Expenses */
+    .kpi-card-expenses {
+      background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(255,235,250,0.97) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(244,114,182,0.2);
+      box-shadow: 0 8px 32px rgba(244,114,182,0.2), 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .kpi-card-expenses::before{ background: linear-gradient(90deg, #F472B6, #d960a3); }
+    .kpi-card-expenses:hover  { box-shadow: 0 22px 52px rgba(244,114,182,0.32), 0 4px 12px rgba(0,0,0,0.12); }
+    /* Net */
+    .kpi-card-net {
+      background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(237,235,255,0.97) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(99,91,255,0.2);
+      box-shadow: 0 8px 32px rgba(99,91,255,0.2), 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .kpi-card-net::before     { background: linear-gradient(90deg, #635BFF, #4f47e3); }
+    .kpi-card-net:hover       { box-shadow: 0 22px 52px rgba(99,91,255,0.3), 0 4px 12px rgba(0,0,0,0.12); }
+    .kpi-card-net.kpi-loss {
+      background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(255,235,250,0.97) 100%);
+      border-color: rgba(244,114,182,0.2);
+      box-shadow: 0 8px 32px rgba(244,114,182,0.2), 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .kpi-card-net.kpi-loss::before { background: linear-gradient(90deg, #F472B6, #d960a3); }
+    .kpi-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.45rem; flex-shrink: 0; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .kpi-icon-income   { background: rgba(0,212,166,0.12);  color: #00D4A6; }
+    .kpi-icon-expenses { background: rgba(244,114,182,0.12); color: #F472B6; }
+    .kpi-icon-net-pos  { background: rgba(99,91,255,0.12);   color: #635BFF; }
+    .kpi-icon-net-neg  { background: rgba(244,114,182,0.12); color: #F472B6; }
+    .kpi-label {
+      font-size: 0.71rem; font-weight: 600; color: #6b7280;
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.2rem;
+    }
+    .kpi-value {
+      font-family: 'Poppins', sans-serif; font-size: 1.3rem;
+      font-weight: 700; color: var(--charcoal); line-height: 1.1;
+    }
+    #kpi-income   { color: #00D4A6 !important; }
+    #kpi-expenses { color: #F472B6 !important; }
+    #kpi-net      { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 700; line-height: 1.1; }
+
+    /* ── Main tabs (pill style) ─────────────────────────────────── */
+    .r2b-tabs { border-bottom: none; gap: 0.35rem; }
+    .r2b-tabs .nav-link {
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
+      color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;
+      padding: 0.55rem 1.1rem; display: flex; align-items: center; gap: 0.4rem;
+      transition: all 0.22s;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+    }
+    .r2b-tabs .nav-link:hover:not(.active) {
+      color: rgba(255,255,255,0.92); background: rgba(255,255,255,0.14);
+      border-color: rgba(99,91,255,0.4); transform: translateY(-1px);
+    }
+    .r2b-tabs .nav-link.active {
+      color: var(--navy); background: rgba(255,255,255,0.95); border-color: #635BFF; font-weight: 600;
+      box-shadow: 0 4px 18px rgba(99,91,255,0.35); transform: translateY(-2px);
+    }
+
+    /* ── Section card ───────────────────────────────────────────── */
+    .section-card {
+      background: rgba(255,255,255,0.93);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.65);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(10,37,64,0.22), 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;
+    }
+    .section-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid rgba(209,213,219,0.45);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(237,235,255,0.88));
+    }
+    .section-header-title {
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      font-size: 0.9rem; color: var(--navy);
+      display: flex; align-items: center; gap: 0.45rem; margin: 0;
+    }
+    .section-badge {
+      background: rgba(99,91,255,0.1); color: #635BFF;
+      border: 1px solid rgba(99,91,255,0.22);
+      font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600;
+      border-radius: 20px; padding: 0.28rem 0.7rem;
+    }
+
+    /* ── Table ──────────────────────────────────────────────────── */
+    #barChart { max-height: 420px; }
+    .r2b-table { font-size: 0.875rem; margin-bottom: 0; }
+    .r2b-table thead th {
+      background: linear-gradient(90deg, #0A2540 0%, #1a2c5a 100%);
+      color: rgba(255,255,255,0.9);
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.875rem 1rem; border: none;
+    }
+    .r2b-table thead th:nth-child(2) { color: rgba(0,212,166,0.9); }
+    .r2b-table thead th:nth-child(3) { color: rgba(244,114,182,0.9); }
+    .r2b-table tbody tr td {
+      padding: 0.6rem 1rem; border-color: rgba(209,213,219,0.5); vertical-align: middle;
+    }
+    .r2b-table tbody tr:hover { background: rgba(99,91,255,0.04); }
+    .r2b-table tbody tr td:first-child {
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      color: var(--navy); font-size: 0.85rem; width: 80px;
+    }
+    .r2b-table .form-control {
+      border-radius: 8px; border: 1.5px solid rgba(209,213,219,0.75);
+      font-size: 0.875rem; padding: 0.4rem 0.65rem;
+      background: rgba(255,255,255,0.85);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .r2b-table .form-control:hover { background: #fff; }
+    .r2b-table .form-control:focus {
+      border-color: #635BFF; box-shadow: 0 0 0 3px rgba(99,91,255,0.18);
+    }
+    .totals-row td {
+      font-family: 'Poppins', sans-serif; font-weight: 700;
+      background: linear-gradient(90deg, rgba(10,37,64,0.05), rgba(99,91,255,0.06));
+      color: var(--navy); border-top: 2px solid rgba(209,213,219,0.6) !important;
+    }
+
+    /* ── Outline LB button (Download) ───────────────────────────── */
+    .btn-outline-lb {
+      border: 1.5px solid #635BFF; color: #635BFF; background: rgba(99,91,255,0.07);
+      font-family: 'Inter', sans-serif; font-weight: 600; border-radius: 9px;
+      font-size: 0.8rem; transition: all 0.22s; display: inline-flex;
+      align-items: center; gap: 0.35rem; padding: 0.42rem 0.9rem;
+    }
+    .btn-outline-lb:hover {
+      background: #635BFF; color: #fff; transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99,91,255,0.45);
+    }
+
+    /* ── Toast ──────────────────────────────────────────────────── */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 11000; }
+    #appToast {
+      border-radius: 14px;
+      box-shadow: 0 8px 36px rgba(10,37,64,0.3), 0 0 0 1px rgba(99,91,255,0.15);
+      min-width: 260px;
+      background: rgba(10,26,52,0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(99,91,255,0.2);
+      color: #fff;
+    }
+    #appToast .toast-body { color: rgba(255,255,255,0.92); }
+
+    /* ── Responsive: mobile sidebar ─────────────────────────────── */
+    @media (max-width: 767.98px) {
+      .r2b-sidebar        { transform: translateX(-100%); }
+      .r2b-sidebar.show   { transform: translateX(0); }
+      .r2b-main           { margin-left: 0; }
+      .r2b-content        { padding: 1rem; }
+      .r2b-topbar         { padding: 0.75rem 1rem; }
+      .topbar-hamburger   { display: flex; }
+    }
+
+    /* ── Animations ─────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .kpi-col:nth-child(1) .kpi-card { animation: r2b-fadeUp 0.5s 0.05s both; }
+      .kpi-col:nth-child(2) .kpi-card { animation: r2b-fadeUp 0.5s 0.16s both; }
+      .kpi-col:nth-child(3) .kpi-card { animation: r2b-fadeUp 0.5s 0.27s both; }
+      .section-card                   { animation: r2b-fadeUp 0.55s 0.14s both; }
+      .r2b-topbar                     { animation: r2b-slideDown 0.42s 0s both; }
+      @keyframes r2b-fadeUp {
+        from { opacity: 0; transform: translateY(28px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0)    scale(1); }
+      }
+      @keyframes r2b-slideDown {
+        from { opacity: 0; transform: translateY(-18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    }
+    @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+      .r2b-sidebar { animation: sidebarSlideIn 0.5s cubic-bezier(0.22,1,0.36,1) 0s both; }
+      @keyframes sidebarSlideIn {
+        from { transform: translateX(-100%); opacity: 0; }
+        to   { transform: translateX(0);     opacity: 1; }
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Global background glow layers -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       AUTH SCREEN  (Sign In + Register)
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="loginScreen">
+    <!-- floating orbs -->
+    <div class="login-orb login-orb-1"></div>
+    <div class="login-orb login-orb-2"></div>
+    <div class="login-orb login-orb-3"></div>
+    <div class="login-orb login-orb-4"></div>
+    <div class="login-card">
+
+      <!-- Logo + heading -->
+      <div class="text-center mb-4">
+        <div class="r2b-logo r2b-logo-lg mx-auto mb-3">R2B</div>
+        <h4 class="fw-bold text-white mb-1">Ruppes2Bar</h4>
+        <p class="small mb-0" style="color:rgba(255,255,255,0.45);">India — Income &amp; Expense Tracker</p>
+      </div>
+
+      <!-- Auth tabs -->
+      <ul class="nav auth-pill-nav nav-fill mb-4" id="authTabs">
+        <li class="nav-item">
+          <button class="nav-link active" id="tab-signin" onclick="switchAuthTab('signin')">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="tab-register" onclick="switchAuthTab('register')">
+            <i class="bi bi-person-plus me-1"></i>Register
+          </button>
+        </li>
+      </ul>
+
+      <!-- ── SIGN IN FORM ── -->
+      <form id="loginForm" novalidate onsubmit="login(); return false;">
+
+        <div class="mb-3">
+          <label for="loginUsername" class="form-label fw-semibold small text-uppercase" style="color:rgba(255,255,255,0.5);letter-spacing:0.06em;">Username</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+            <input type="text" id="loginUsername" class="form-control"
+              placeholder="Your username" autocomplete="off">
+          </div>
+          <ul id="usernameChecklist" class="list-unstyled small mt-2 mb-0 d-none">
+            <li id="req-length"  class="text-danger"><span class="me-1">✗</span>At least 5 characters</li>
+            <li id="req-upper"   class="text-danger"><span class="me-1">✗</span>At least one uppercase letter (A–Z)</li>
+            <li id="req-number"  class="text-danger"><span class="me-1">✗</span>At least one number (0–9)</li>
+            <li id="req-special" class="text-danger"><span class="me-1">✗</span>At least one special character</li>
+          </ul>
+        </div>
+
+        <div class="mb-4">
+          <label for="loginPassword" class="form-label fw-semibold small text-uppercase" style="color:rgba(255,255,255,0.5);letter-spacing:0.06em;">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" id="loginPassword" class="form-control"
+              placeholder="Your password" autocomplete="off">
+            <button type="button" class="input-group-text"
+              onclick="togglePasswordVisibility('loginPassword','toggleIcon')">
+              <i class="bi bi-eye" id="toggleIcon"></i>
+            </button>
+          </div>
+          <div id="loginError" class="text-danger small mt-2 d-none"></div>
+        </div>
+
+        <button type="submit" id="loginBtn" class="btn btn-lb w-100 py-2">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+
+      </form>
+
+      <!-- ── REGISTER FORM ── -->
+      <form id="registerForm" novalidate onsubmit="register(); return false;" class="d-none">
+
+        <div class="mb-3">
+          <label for="regUsername" class="form-label fw-semibold small text-uppercase" style="color:rgba(255,255,255,0.5);letter-spacing:0.06em;">Username</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+            <input type="text" id="regUsername" class="form-control"
+              placeholder="Choose a username" autocomplete="off">
+          </div>
+          <ul id="regChecklist" class="list-unstyled small mt-2 mb-0 d-none">
+            <li id="reg-req-length"  class="text-danger"><span class="me-1">✗</span>At least 5 characters</li>
+            <li id="reg-req-upper"   class="text-danger"><span class="me-1">✗</span>At least one uppercase letter (A–Z)</li>
+            <li id="reg-req-number"  class="text-danger"><span class="me-1">✗</span>At least one number (0–9)</li>
+            <li id="reg-req-special" class="text-danger"><span class="me-1">✗</span>At least one special character</li>
+          </ul>
+        </div>
+
+        <div class="mb-3">
+          <label for="regPassword" class="form-label fw-semibold small text-uppercase" style="color:rgba(255,255,255,0.5);letter-spacing:0.06em;">Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+            <input type="password" id="regPassword" class="form-control"
+              placeholder="Choose a password (min 6 chars)" autocomplete="off">
+            <button type="button" class="input-group-text"
+              onclick="togglePasswordVisibility('regPassword','regToggleIcon')">
+              <i class="bi bi-eye" id="regToggleIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="regConfirm" class="form-label fw-semibold small text-uppercase" style="color:rgba(255,255,255,0.5);letter-spacing:0.06em;">Confirm Password</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-shield-lock-fill"></i></span>
+            <input type="password" id="regConfirm" class="form-control"
+              placeholder="Repeat your password" autocomplete="off">
+          </div>
+          <div id="registerError" class="text-danger small mt-2 d-none"></div>
+        </div>
+
+        <button type="submit" id="registerBtn" class="btn btn-coral w-100 py-2">
+          <i class="bi bi-person-check me-2"></i>Create Account
+        </button>
+
+      </form>
+
+    </div>
+  </div><!-- /#loginScreen -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN APPLICATION
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="mainApp">
+
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <aside class="r2b-sidebar" id="r2bSidebar">
+
+      <div class="sidebar-brand">
+        <div class="r2b-logo r2b-logo-sm">R2B</div>
+        <div>
+          <div class="brand-name">Ruppes2Bar</div>
+          <div class="brand-sub">India · Finance Tracker</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        <button class="sidebar-link active" id="sidebar-data-link" data-tab="dataTab"
+          onclick="activateSidebarTab('dataTab')">
+          <i class="bi bi-table"></i> Data
+        </button>
+        <button class="sidebar-link" id="sidebar-charts-link" data-tab="chartsTab"
+          onclick="activateSidebarTab('chartsTab')">
+          <i class="bi bi-bar-chart-line"></i> 📊 Charts
+        </button>
+
+        <div class="sidebar-section-label" style="margin-top:1rem;">Overview</div>
+        <div class="sidebar-link" style="pointer-events:none;opacity:0.55;font-size:0.8rem;">
+          <i class="bi bi-calendar3"></i> 12 Months Tracked
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="navAvatar">?</div>
+          <span class="sidebar-username" id="navUsername">—</span>
+        </div>
+        <button class="btn-sidebar-logout" onclick="logout()">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+
+    </aside><!-- /.r2b-sidebar -->
+
+    <!-- ── Main content wrapper ───────────────────────────────── -->
+    <div class="r2b-main">
+
+      <!-- Top bar -->
+      <header class="r2b-topbar">
+        <div class="d-flex align-items-center gap-3">
+          <button class="topbar-hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+            <i class="bi bi-list fs-4"></i>
+          </button>
+          <div>
+            <div class="topbar-title">📊 Monthly Dashboard</div>
+            <div class="topbar-sub">Track income &amp; expenses — Indian Rupee (₹)</div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="topbar-badge"><span class="live-dot"></span> Live</span>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="r2b-content">
+
+        <!-- KPI Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-4 kpi-col">
+            <div class="kpi-card kpi-card-income h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="kpi-icon kpi-icon-income">
+                  <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div>
+                  <div class="kpi-label">Total Income</div>
+                  <div class="kpi-value" id="kpi-income">₹ 0.00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4 kpi-col">
+            <div class="kpi-card kpi-card-expenses h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="kpi-icon kpi-icon-expenses">
+                  <i class="bi bi-graph-down-arrow"></i>
+                </div>
+                <div>
+                  <div class="kpi-label">Total Expenses</div>
+                  <div class="kpi-value" id="kpi-expenses">₹ 0.00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-4 kpi-col">
+            <div class="kpi-card kpi-card-net h-100" id="kpi-net-card">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="kpi-icon kpi-icon-net-pos" id="kpi-net-icon">
+                  <i class="bi bi-piggy-bank text-primary" id="kpi-net-icon-i"></i>
+                </div>
+                <div>
+                  <div class="kpi-label">Net Savings</div>
+                  <div class="kpi-value" id="kpi-net">₹ 0.00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab nav pills -->
+        <ul class="nav r2b-tabs mb-3" id="mainTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active d-flex align-items-center gap-2" id="data-tab"
+              data-bs-toggle="tab" data-bs-target="#dataTab" type="button" role="tab">
+              <i class="bi bi-table"></i> Data
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link d-flex align-items-center gap-2" id="charts-tab"
+              data-bs-toggle="tab" data-bs-target="#chartsTab" type="button" role="tab">
+              <i class="bi bi-bar-chart-line"></i> Charts
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+
+          <!-- DATA TAB -->
+          <div class="tab-pane fade show active" id="dataTab" role="tabpanel">
+            <form id="monthlyDataForm" novalidate onsubmit="return false;">
+              <div class="section-card">
+                <div class="section-header">
+                  <h6 class="section-header-title">
+                    <i class="bi bi-calendar3"></i> Monthly Figures (₹)
+                  </h6>
+                  <span class="section-badge">12 months</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table r2b-table table-hover table-bordered">
+                      <thead>
+                        <tr>
+                          <th><i class="bi bi-calendar-month me-1"></i>Month</th>
+                          <th><i class="bi bi-arrow-up-circle me-1"></i>Income (₹)</th>
+                          <th><i class="bi bi-arrow-down-circle me-1"></i>Expenses (₹)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr><td>Jan</td><td><input type="number" id="income-Jan" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Jan" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Feb</td><td><input type="number" id="income-Feb" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Feb" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Mar</td><td><input type="number" id="income-Mar" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Mar" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Apr</td><td><input type="number" id="income-Apr" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Apr" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>May</td><td><input type="number" id="income-May" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-May" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Jun</td><td><input type="number" id="income-Jun" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Jun" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Jul</td><td><input type="number" id="income-Jul" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Jul" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Aug</td><td><input type="number" id="income-Aug" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Aug" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Sep</td><td><input type="number" id="income-Sep" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Sep" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Oct</td><td><input type="number" id="income-Oct" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Oct" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Nov</td><td><input type="number" id="income-Nov" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Nov" class="form-control" value="0" min="0" step="any"></td></tr>
+                        <tr><td>Dec</td><td><input type="number" id="income-Dec" class="form-control" value="0" min="0" step="any"></td><td><input type="number" id="expense-Dec" class="form-control" value="0" min="0" step="any"></td></tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="totals-row">
+                          <td><i class="bi bi-calculator me-1"></i>Total</td>
+                          <td id="total-income">₹ 0.00</td>
+                          <td id="total-expenses">₹ 0.00</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- CHARTS TAB -->
+          <div class="tab-pane fade" id="chartsTab" role="tabpanel">
+            <div class="section-card">
+              <div class="section-header">
+                <h6 class="section-header-title">
+                  <i class="bi bi-bar-chart-line"></i> Income vs Expenses — Bar Chart
+                </h6>
+                <button class="btn-outline-lb" onclick="downloadChart()">
+                  <i class="bi bi-download"></i> Download PNG
+                </button>
+              </div>
+              <div class="card-body">
+                <canvas id="barChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /tab-content -->
+      </main>
+    </div><!-- /.r2b-main -->
+  </div><!-- /#mainApp -->
+
+  <!-- Toast -->
+  <div class="toast-container">
+    <div id="appToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body fw-semibold" id="toastMsg"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
