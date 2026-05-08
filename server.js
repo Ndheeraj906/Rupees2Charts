@@ -14,6 +14,7 @@ const pool = new Pool({
     database: process.env.DB_NAME     || 'ruppes2bar',
     user:     process.env.DB_USER     || 'postgres',
     password: process.env.DB_PASSWORD,
+    ssl:      process.env.DB_HOST && process.env.DB_HOST !== 'localhost' ? { rejectUnauthorized: false } : false
 });
 
 // ── Middleware ─────────────────────────────────────────────────────────────
